@@ -36,6 +36,16 @@ function collectImages() {
     .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
 }
 
+// Empty a directory's contents without removing the directory node itself.
+// Removing the top directory can fail on Windows (EPERM) when it's open in
+// Explorer or is a process's working directory; emptying contents avoids that.
+function emptyDir(dir) {
+  if (!fs.existsSync(dir)) return;
+  for (const entry of fs.readdirSync(dir)) {
+    fs.rmSync(path.join(dir, entry), { recursive: true, force: true });
+  }
+}
+
 // Turn a filename like "sleepy-fox_01.jpg" into "sleepy fox 01" for alt text.
 function altFromFilename(filename) {
   return path
@@ -88,7 +98,7 @@ ${tiles}
     </section>
 
     <footer class="page-foot">
-      <p>maintined by s1erra, main page : <a href="https://foxgirl.fyi">foxgirl.fyi</a></p>
+      <p>maintained by s1erra, main page : <a href="https://foxgirl.fyi">foxgirl.fyi</a></p>
     </footer>
   </main>
 </body>
@@ -104,8 +114,9 @@ function main() {
   const images = collectImages();
   log(`Found ${images.length} image(s).`);
 
-  // Fresh public/ each build so deleted source images don't linger.
-  fs.rmSync(PUBLIC_DIR, { recursive: true, force: true });
+  // Fresh public/ each build so deleted source images don't linger. Empty the
+  // contents rather than removing the folder (survives Explorer/CWD locks).
+  emptyDir(PUBLIC_DIR);
   fs.mkdirSync(PUBLIC_IMAGES_DIR, { recursive: true });
 
   // Copy source images into public/images.
