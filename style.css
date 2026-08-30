@@ -1,0 +1,121 @@
+/* foxgirls.download — styling modeled on foxgirl.fyi */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Lucida Console", Monaco, monospace;
+  background-color: rgb(18, 18, 18);
+  color: #f3f3f3;
+  min-height: 100vh;
+}
+
+.body-content {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+/* Header block — dark bar like foxgirl.fyi h2 */
+.page-head {
+  margin-bottom: 1.5rem;
+}
+
+h2 {
+  background-color: rgba(27, 27, 27, 1);
+  color: #f3f3f3;
+  border-radius: 2px;
+  margin: 0.5rem 0;
+  text-indent: 10px;
+  padding: 0.4rem 10px 0.4rem 0;
+  font-size: 1.4rem;
+}
+
+.text1 {
+  margin: 0.4rem 0.5rem;
+  line-height: 1.2;
+  color: #92a6ff;
+}
+
+/* The scrolling 3-wide grid */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.tile {
+  background-color: rgba(27, 27, 27, 0.25);
+  backdrop-filter: blur(5px);
+  background-blend-mode: overlay;
+  border-radius: 5px;
+  padding: 0.4rem;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tile img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 3px;
+  background-color: #f3f3f3;
+  transition: transform 0.3s ease-in-out;
+  transform-origin: center;
+}
+
+.tile img:hover {
+  transform: scale(1.04);
+  z-index: 10;
+}
+
+.empty-note {
+  grid-column: 1 / -1;
+  padding: 3rem 1rem;
+  text-align: center;
+  color: #92a6ff;
+}
+
+.empty-note code {
+  color: #f3f3f3;
+  background: rgba(27, 27, 27, 1);
+  padding: 0.1rem 0.35rem;
+  border-radius: 2px;
+}
+
+.page-foot {
+  margin-top: 3rem;
+  padding-top: 1rem;
+  font-size: 0.8rem;
+  color: #92a6ff;
+  text-align: center;
+}
+
+.page-foot a {
+  color: #92a6ff;
+  text-decoration: none;
+  transition: font-style 0.1s ease-in-out;
+}
+
+.page-foot a:hover {
+  color: white;
+  font-style: italic;
+}
+
+/* Responsive: collapse the 3-wide grid on narrow screens */
+@media (max-width: 48rem) {
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 30rem) {
+  .gallery-grid {
+    grid-template-columns: 1fr;
+  }
+}

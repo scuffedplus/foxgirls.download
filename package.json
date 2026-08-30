@@ -1,0 +1,10 @@
+{
+  "name": "foxgirls-download",
+  "version": "1.0.0",
+  "description": "A static scrolling 3-wide grid of foxes.",
+  "private": true,
+  "scripts": {
+    "build": "node build.js",
+    "serve": "node build.js && cd public && python -m http.server 8080"
+  }
+}
