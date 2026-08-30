@@ -97,7 +97,7 @@ function renderPage(images) {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>foxgirls.download</title>
-  <meta name="description" content="a scrolling grid of foxes." />
+  <meta name="description" content="so many foxes :3" />
   <link rel="icon" href="favicon.ico" sizes="any" />
   <link rel="stylesheet" href="style.css" />
 </head>
