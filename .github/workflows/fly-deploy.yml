@@ -1,0 +1,28 @@
+name: Deploy to Fly.io
+
+# Rebuild and deploy whenever images or site files change on main.
+on:
+  push:
+    branches:
+      - main
+
+# Cancel an in-progress deploy if a newer push arrives.
+concurrency:
+  group: fly-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Deploy
+        run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
