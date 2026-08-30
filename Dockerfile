@@ -3,6 +3,7 @@ FROM node:20-alpine AS build
 WORKDIR /app
 COPY build.js style.css ./
 COPY images ./images
+COPY iconsandgraphics ./iconsandgraphics
 RUN node build.js
 
 # Stage 2 — serve the static output with nginx

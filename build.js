@@ -11,6 +11,7 @@ const path = require("path");
 
 const ROOT = __dirname;
 const IMAGES_DIR = path.join(ROOT, "images");
+const ICONS_DIR = path.join(ROOT, "iconsandgraphics");
 const PUBLIC_DIR = path.join(ROOT, "public");
 const PUBLIC_IMAGES_DIR = path.join(PUBLIC_DIR, "images");
 
@@ -44,6 +45,20 @@ function emptyDir(dir) {
   for (const entry of fs.readdirSync(dir)) {
     fs.rmSync(path.join(dir, entry), { recursive: true, force: true });
   }
+}
+
+// Recursively copy a directory's contents into dest (created if missing).
+function copyDir(src, dest) {
+  if (!fs.existsSync(src)) return false;
+  fs.mkdirSync(dest, { recursive: true });
+  for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
+    if (entry.name.startsWith(".")) continue;
+    const from = path.join(src, entry.name);
+    const to = path.join(dest, entry.name);
+    if (entry.isDirectory()) copyDir(from, to);
+    else fs.copyFileSync(from, to);
+  }
+  return true;
 }
 
 // Turn a filename like "sleepy-fox_01.jpg" into "sleepy fox 01" for alt text.
@@ -83,7 +98,7 @@ function renderPage(images) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>foxgirls.download</title>
   <meta name="description" content="a scrolling grid of foxes." />
-  <link rel="preconnect" href="/" />
+  <link rel="icon" href="favicon.ico" sizes="any" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -126,6 +141,17 @@ function main() {
 
   // Copy the stylesheet.
   copyFile(path.join(ROOT, "style.css"), path.join(PUBLIC_DIR, "style.css"));
+
+  // Copy icons/graphics, and surface favicon.ico at the site root so browsers
+  // (and the <link rel="icon">) find it.
+  if (copyDir(ICONS_DIR, path.join(PUBLIC_DIR, "iconsandgraphics"))) {
+    const favicon = path.join(ICONS_DIR, "favicon.ico");
+    if (fs.existsSync(favicon)) {
+      copyFile(favicon, path.join(PUBLIC_DIR, "favicon.ico"));
+      log("Copied favicon.ico to site root.");
+    }
+    log("Copied iconsandgraphics/ into public/.");
+  }
 
   // Write the generated page.
   fs.writeFileSync(path.join(PUBLIC_DIR, "index.html"), renderPage(images));
