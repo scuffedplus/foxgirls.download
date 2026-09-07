@@ -32,6 +32,12 @@ const CONVERTIBLE = new Set([
 
 const WEBP_QUALITY = 82;
 const WEBP_EFFORT = 6;
+// High-quality chroma subsampling (libwebp's sharp YUV conversion). Costs a
+// little encode time and keeps saturated edges — fox fur, reds — from bleeding.
+const WEBP_SMART_SUBSAMPLE = true;
+// Let libwebp pick the deblocking filter strength per image instead of using a
+// fixed one, which smooths blocking artefacts out of flat areas.
+const WEBP_SMART_DEBLOCK = true;
 
 function log(msg) {
   process.stdout.write(`[images] ${msg}\n`);
@@ -140,7 +146,12 @@ async function main() {
     const tmp = path.join(IMAGES_DIR, `.${target}.tmp`);
     try {
       await sharp(src, { animated: true })
-        .webp({ quality: WEBP_QUALITY, effort: WEBP_EFFORT })
+        .webp({
+          quality: WEBP_QUALITY,
+          effort: WEBP_EFFORT,
+          smartSubsample: WEBP_SMART_SUBSAMPLE,
+          smartDeblock: WEBP_SMART_DEBLOCK,
+        })
         .toFile(tmp);
     } catch (err) {
       fs.rmSync(tmp, { force: true });
