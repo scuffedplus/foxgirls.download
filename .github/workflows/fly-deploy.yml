@@ -1,10 +1,16 @@
 name: Deploy to Fly.io
 
-# Rebuild and deploy whenever images or site files change on main.
+# Runs after "Optimize Images" finishes, so the deploy always ships the
+# converted/renumbered images rather than the raw push. Note that the
+# optimizer's own commit uses GITHUB_TOKEN and so cannot re-trigger a push
+# event — this workflow_run chain is what keeps the two in order.
 on:
-  push:
+  workflow_run:
+    workflows: ["Optimize Images"]
     branches:
       - main
+    types:
+      - completed
 
 # Cancel an in-progress deploy if a newer push arrives.
 concurrency:
@@ -15,9 +21,14 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # Take the branch tip, not the workflow_run's head SHA — the tip
+          # includes the optimizer's commit.
+          ref: ${{ github.event.workflow_run.head_branch }}
 
       - name: Set up flyctl
         uses: superfly/flyctl-actions/setup-flyctl@master

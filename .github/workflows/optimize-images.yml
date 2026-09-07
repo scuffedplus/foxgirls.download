@@ -1,0 +1,46 @@
+name: Optimize Images
+
+# Runs first on every push to main: normalizes images/ to sequentially named
+# WebP files and commits the result. The Fly.io deploy then runs off the
+# commit this produces (see fly-deploy.yml).
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: optimize-images
+  cancel-in-progress: false
+
+jobs:
+  optimize:
+    name: Convert to WebP
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install sharp
+        run: npm install --no-save sharp
+
+      - name: Convert and renumber images
+        run: node scripts/optimize-images.js
+
+      - name: Commit changes
+        run: |
+          if [ -z "$(git status --porcelain -- images)" ]; then
+            echo "images/ unchanged — nothing to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A images
+          git commit -m "chore: re-encode images to webp [skip ci]"
+          git push

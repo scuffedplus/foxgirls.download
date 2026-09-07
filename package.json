@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "build": "node build.js",
+    "images": "node scripts/optimize-images.js",
     "serve": "node build.js && cd public && python -m http.server 8080"
   }
 }
