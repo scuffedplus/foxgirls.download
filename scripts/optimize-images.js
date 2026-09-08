@@ -146,6 +146,9 @@ async function main() {
     const tmp = path.join(IMAGES_DIR, `.${target}.tmp`);
     try {
       await sharp(src, { animated: true })
+        // Carry the source's ICC profile through instead of stripping it, so
+        // wide-gamut (Display P3 etc.) images don't shift colour after encode.
+        .keepIccProfile()
         .webp({
           quality: WEBP_QUALITY,
           effort: WEBP_EFFORT,
